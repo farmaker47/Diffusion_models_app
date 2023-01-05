@@ -26,10 +26,11 @@ android {
         }
         python {
             //buildPython "/usr/local/bin/python3.8"
-            //buildPython "python3.8"
+            //buildPython "/usr/bin/python3"
             pip {
                 // A requirement specifier, with or without a version number:
-                //install "numpy"
+                install "numpy"
+                install "ftfy"
                 // Install tensorflow lite runtime
                 //install "tflite-runtime"
             }
