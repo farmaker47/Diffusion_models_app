@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.chaquo.python'
 }
 
 android {
@@ -15,6 +16,27 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        sourceSets {
+            main {
+                python {
+                    srcDirs = ["src/main/python"]
+                }
+            }
+        }
+        python {
+            //buildPython "/usr/local/bin/python3.8"
+            //buildPython "python3.8"
+            pip {
+                // A requirement specifier, with or without a version number:
+                //install "numpy"
+                // Install tensorflow lite runtime
+                //install "tflite-runtime"
+            }
+        }
+        ndk {
+            abiFilters "armeabi-v7a"//, 'arm64-v8a'
+        }
     }
 
     buildTypes {
@@ -24,8 +46,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
         jvmTarget = '1.8'
