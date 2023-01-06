@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.chaquo.python.Python
 import com.example.diffusionmodelsapp.R
 
@@ -34,8 +35,11 @@ class MainFragment : Fragment() {
         val python = Python.getInstance()
         val pythonFile = python.getModule("encode_text")
         //Log.v("Chaquopy", path + "heytj2.wav")
-        val wavString = pythonFile.callAttr("getStringFromWav", "georg")
-        Log.v("Chaquopy", wavString.toString())
+        val encodedString = pythonFile.callAttr("encodeText", "two cats doing research")
+        Log.v("Chaquopy", encodedString.toString())
+
+        val textView = contentView.findViewById<TextView>(R.id.message)
+        textView.text = encodedString.toString()
 
         return contentView
     }
