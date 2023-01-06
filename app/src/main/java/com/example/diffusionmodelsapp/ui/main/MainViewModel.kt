@@ -1,7 +1,13 @@
 package com.example.diffusionmodelsapp.ui.main
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 
 class MainViewModel : ViewModel() {
-    // TODO: Implement the ViewModel
+
+
+    fun getEncoderResult(context: Context, array: Array<Int>) {
+        val diffusionExecutor = DiffusionExecutor(context)
+        diffusionExecutor.encoderExecutor(array)
+    }
 }
