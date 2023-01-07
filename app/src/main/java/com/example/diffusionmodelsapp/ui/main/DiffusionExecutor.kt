@@ -6,6 +6,8 @@ import android.util.Log
 import org.tensorflow.lite.Interpreter
 import java.io.FileInputStream
 import java.io.IOException
+import java.nio.ByteBuffer
+import java.nio.IntBuffer
 import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 
@@ -26,11 +28,11 @@ class DiffusionExecutor(
     companion object {
         private const val TAG = "DiffusionExecutor"
 
-        private const val ENCODER_MODEL = "text_encoder_float16.tflite"
+        private const val ENCODER_MODEL = "encoder_float16.tflite"
     }
 
     // Function for Interpreter
-    fun encoderExecutor(array: Array<Int>) {
+    fun encoderExecutor(array: IntArray) {
         try {
             Log.i(TAG, "running models")
 
@@ -40,6 +42,11 @@ class DiffusionExecutor(
             val inputType = interpreterPredict.getInputTensor(0).dataType()
             val inputName = interpreterPredict.getInputTensor(0).name()
             val inputShape = interpreterPredict.getInputTensor(0).shape()
+            Log.i(TAG, "$inputType $inputName $inputShape")
+            val inputType1 = interpreterPredict.getInputTensor(1).dataType()
+            val inputName1 = interpreterPredict.getInputTensor(1).name()
+            val inputShape1 = interpreterPredict.getInputTensor(1).shape()
+            Log.i(TAG, "$inputType1 $inputName1 $inputShape1")
 
             val outputName = interpreterPredict.getOutputTensor(0).name()
             var arrayOutputsContext = Array(1) {
@@ -54,11 +61,22 @@ class DiffusionExecutor(
             }
 
             val signatures = interpreterPredict.signatureKeys
-            Log.i(TAG, signatures.toString())
+            Log.i(TAG, signatures[0].toString())
+
+            //val tokensBuffer = TensorBuffer.createDynamic(DataType.INT32)
+            //val batchSizeBuffer = TensorBuffer.createDynamic(DataType.INT32)
 
             val inputs: MutableMap<String, Any> = HashMap()
-            inputs["tokens"] = arrayOf(array)
-            inputs["batch_size"] = arrayOf(1)
+            // Method
+            //val bytesTokens = array.foldIndexed(ByteArray(array.size)) { i, a, v -> a.apply { set(i, v.toByte()) } }
+            //val bytesBatch = arrayOf(1).foldIndexed(ByteArray(1)) { i, a, v -> a.apply { set(i, v.toByte()) } }
+            val byteBuffer = ByteBuffer.allocate(array.size * 4)
+            val intBuffer: IntBuffer = byteBuffer.asIntBuffer()
+            intBuffer.put(array)
+            val tokensArray = byteBuffer.array()
+
+            inputs["tokens"] = ByteBuffer.wrap(tokensArray)//ByteBuffer.wrap(bytesTokens)//tokensBuffer.loadArray(array)//arrayOf(array)
+            inputs["batch_size"] = ByteBuffer.wrap(ByteBuffer.allocate(Int.SIZE_BYTES).putInt(1).array())//batchSizeBuffer.loadArray(intArrayOf(1))//arrayOf(1)
             val outputs: MutableMap<String, Any> = HashMap()
             outputs["context"] = arrayOutputsContext
             outputs["unconditional_context"] = arrayOutputsUnconditionalContext
@@ -79,7 +97,7 @@ class DiffusionExecutor(
         } catch (e: Exception) {
 
             val exceptionLog = "something went wrong: ${e.message}"
-            Log.e("EXECUTOR", exceptionLog)
+            Log.e(TAG, exceptionLog)
 
             //return longArrayOf()
         }
