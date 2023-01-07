@@ -36,9 +36,7 @@ class MainFragment : Fragment() {
         val pythonFile = python.getModule("encode_text")
         //val encodedString = pythonFile.callAttr("encodeText", "two cats doing research")
         //Log.v("Chaquopy", encodedString.toString())
-        val encodedObject: IntArray = pythonFile.callAttr("encodeText", "two cats doing research").toJava(IntArray::class.java)
-
-        Log.v("Chaquopy", encodedObject[0].toString())
+        val encodedObject: IntArray = pythonFile.callAttr("encodeText", "two cats doing surfing").toJava(IntArray::class.java)
 
         val textView = contentView.findViewById<TextView>(R.id.message)
         textView.text = encodedObject[0].toString()
