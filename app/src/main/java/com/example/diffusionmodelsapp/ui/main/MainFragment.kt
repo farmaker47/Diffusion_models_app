@@ -31,6 +31,8 @@ class MainFragment : Fragment() {
     ): View {
         val contentView = inflater.inflate(R.layout.fragment_main, container, false)
 
+        val memory = Runtime.getRuntime().maxMemory()
+        Log.v("Chaquopy", memory.toString())
         // Get string from Python
         val python = Python.getInstance()
         val pythonFile = python.getModule("encode_text")
