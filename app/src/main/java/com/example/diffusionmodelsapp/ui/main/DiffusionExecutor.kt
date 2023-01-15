@@ -3,6 +3,7 @@ package com.example.diffusionmodelsapp.ui.main
 import android.content.Context
 import android.os.SystemClock
 import android.util.Log
+import com.chaquo.python.Python
 import org.tensorflow.lite.Interpreter
 import java.io.File
 import java.io.FileInputStream
@@ -18,19 +19,24 @@ class DiffusionExecutor(
     private var numberThreads = 7
     private var fullExecutionTime = 0L
     private val interpreterEncoder: Interpreter
+
     //private val interpreterDiffusion: Interpreter
+    private val interpreterDecoder: Interpreter
 
     init {
         // Interpreter
         interpreterEncoder = getInterpreter(context, ENCODER_MODEL, false)
         //interpreterDiffusion = getInterpreter(context, DIFFUSION_MODEL, false)
+        interpreterDecoder = getInterpreter(context, DECODER_MODEL, false)
     }
 
     companion object {
         private const val TAG = "DiffusionExecutor"
 
         private const val ENCODER_MODEL = "text_encoder_chollet_float_16.tflite"
-        private const val DIFFUSION_MODEL = "diffusion_model_17.tflite"
+
+        //private const val DIFFUSION_MODEL = "diffusion_model_17.tflite"
+        private const val DECODER_MODEL = "decoder.tflite"
         private val intArrayOfPositions = intArrayOf(
             0,
             1,
@@ -199,11 +205,11 @@ class DiffusionExecutor(
             fullExecutionTime = SystemClock.uptimeMillis()
 
             // Info of the model
-            /*val inputType = interpreterEncoder.getInputTensor(0).dataType()
-            val inputName = interpreterEncoder.getInputTensor(0).name()
-            val inputShape = interpreterEncoder.getInputTensor(0).shape()
+            val inputType = interpreterDecoder.getInputTensor(0).dataType()
+            val inputName = interpreterDecoder.getInputTensor(0).name()
+            val inputShape = interpreterDecoder.getInputTensor(0).shape()
             Log.i(TAG, "$inputType $inputName $inputShape")
-            val inputType1 = interpreterEncoder.getInputTensor(1).dataType()
+            /*val inputType1 = interpreterEncoder.getInputTensor(1).dataType()
             val inputName1 = interpreterEncoder.getInputTensor(1).name()
             val inputShape1 = interpreterEncoder.getInputTensor(1).shape()
             Log.i(TAG, "$inputType1 $inputName1 $inputShape1")
@@ -327,18 +333,55 @@ class DiffusionExecutor(
             inputs[1] = positionInput*/
             val outputsContext: MutableMap<Int, Any> = HashMap()
             outputsContext[0] = arrayOutputsContext
-            interpreterEncoder.runForMultipleInputsOutputs(arrayOf<Any>(contextInput, positionInput) , outputsContext)
+            interpreterEncoder.runForMultipleInputsOutputs(
+                arrayOf<Any>(
+                    contextInput,
+                    positionInput
+                ), outputsContext
+            )
             // For unconditional context
             /*val inputsUnconditional: MutableMap<Int, Any> = HashMap()
             inputsUnconditional[0] = unconditionalContextInput
             inputsUnconditional[1] = positionInput*/
             val outputsUnconditionalContext: MutableMap<Int, Any> = HashMap()
             outputsUnconditionalContext[0] = arrayOutputsUnconditionalContext
-            interpreterEncoder.runForMultipleInputsOutputs(arrayOf<Any>(unconditionalContextInput, positionInput), outputsUnconditionalContext)
+            interpreterEncoder.runForMultipleInputsOutputs(
+                arrayOf<Any>(
+                    unconditionalContextInput,
+                    positionInput
+                ), outputsUnconditionalContext
+            )
 
             Log.i(TAG, "after running")
 
             fullExecutionTime = SystemClock.uptimeMillis() - fullExecutionTime
+
+
+            //
+            val python = Python.getInstance()
+            val modelfile = python.getModule("run_diffusion_model")
+            val result = modelfile.callAttr(
+                "runModel",
+                arrayOutputsContext,
+                arrayOutputsUnconditionalContext
+            ).toJava(Array<Array<Array<FloatArray>>>::class.java)
+
+            Log.v("Chaquopyy", result.toString())
+            result[0][0][0].forEach { first ->
+                Log.v("Chaquopy", first.toString())
+            }
+
+            // Decoder
+            val decoderOutput = Array(1) {
+                Array(1) {
+                    Array(1) {
+                        IntArray(3)
+                    }
+                }
+            }
+            interpreterDecoder.run(
+                result, decoderOutput
+            )
 
             Log.i(TAG, "Time to run everything: $fullExecutionTime")
             Log.i(TAG, "Context: ${arrayOutputsContext[0][76][767]}")
@@ -386,8 +429,8 @@ class DiffusionExecutor(
         //tfliteOptions.setUseNNAPI(true)     //846ms
         //tfliteOptions.setUseXNNPACK(true) //     Caused by: java.lang.IllegalArgumentException: Internal error: Failed to apply XNNPACK delegate:
         //     Attempting to use a delegate that only supports static-sized tensors with a graph that has dynamic-sized tensors.
-
-        return Interpreter(loadModelFromInternalStorage(context, modelName))//Interpreter(loadModelFile(context, modelName), tfliteOptions)
+        val mByteBuffer = loadModelFromInternalStorage(context, modelName)
+        return Interpreter(mByteBuffer)//Interpreter(loadModelFile(context, modelName), tfliteOptions)
     }
 
     @Throws(IOException::class)
@@ -402,7 +445,10 @@ class DiffusionExecutor(
         return retFile
     }
 
-    private fun loadModelFromInternalStorage(context: Context, modelName: String): MappedByteBuffer {
+    private fun loadModelFromInternalStorage(
+        context: Context,
+        modelName: String
+    ): MappedByteBuffer {
         val modelPath: String = context.filesDir.path + "/" + modelName
         val file = File(modelPath)
         val inputStream = FileInputStream(file)
@@ -412,6 +458,6 @@ class DiffusionExecutor(
     }
 
     fun close() {
-        interpreterEncoder.close()
+        //interpreterEncoder.close()
     }
 }

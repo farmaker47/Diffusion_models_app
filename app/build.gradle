@@ -29,9 +29,11 @@ android {
             //buildPython "/usr/bin/python3"
             pip {
                 // A requirement specifier, with or without a version number:
-                //install "numpy"
+                install "numpy"
                 install "ftfy"
                 install "regex"
+                //install "tensorflow"
+                install "requests"
                 // Install tensorflow lite runtime
                 //install "tflite-runtime"
             }

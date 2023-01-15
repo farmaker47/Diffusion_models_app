@@ -1,6 +1,7 @@
 package com.example.diffusionmodelsapp.ui.main
 
 import android.os.Bundle
+import android.text.format.Formatter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -31,8 +32,16 @@ class MainFragment : Fragment() {
     ): View {
         val contentView = inflater.inflate(R.layout.fragment_main, container, false)
 
-        val memory = Runtime.getRuntime().maxMemory()
-        Log.v("Chaquopy", memory.toString())
+        val runtime = Runtime.getRuntime()
+        val maxMemory = runtime.maxMemory()
+        Log.v("Chaquopy_max", maxMemory.toString())
+        val usedMemory = runtime.totalMemory() - runtime.freeMemory()
+        Log.v("Chaquopy_used", usedMemory.toString())
+        val availableMemory = maxMemory - usedMemory
+        Log.v("Chaquopy_avail", availableMemory.toString())
+        val formattedMemorySize: String = Formatter.formatShortFileSize(context, availableMemory)
+        Log.v("Chaquopy_avail_form", formattedMemorySize)
+
         // Get string from Python
         val python = Python.getInstance()
         val pythonFile = python.getModule("encode_text")
