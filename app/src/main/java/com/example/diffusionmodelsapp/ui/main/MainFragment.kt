@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -47,12 +48,14 @@ class MainFragment : Fragment() {
         val pythonFile = python.getModule("encode_text")
         //val encodedString = pythonFile.callAttr("encodeText", "two cats doing research")
         //Log.v("Chaquopy", encodedString.toString())
-        val encodedObject: IntArray = pythonFile.callAttr("encodeText", "two cats doing surfing").toJava(IntArray::class.java)
+        val encodedObject: IntArray = pythonFile.callAttr("encodeText", "elephant on washing machine drinking soda").toJava(IntArray::class.java)
 
         val textView = contentView.findViewById<TextView>(R.id.message)
         textView.text = encodedObject[0].toString()
 
-        val encoderResult = viewModel.getEncoderResult(requireActivity(), encodedObject)
+        val bitmap = viewModel.getResult(requireActivity(), encodedObject)
+        val imageView = contentView.findViewById<ImageView>(R.id.imageViewBitmap)
+        imageView.setImageBitmap(bitmap)
 
         return contentView
     }

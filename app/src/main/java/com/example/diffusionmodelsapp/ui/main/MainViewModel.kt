@@ -1,12 +1,14 @@
 package com.example.diffusionmodelsapp.ui.main
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 
 class MainViewModel : ViewModel() {
 
-    fun getEncoderResult(context: Context, array: IntArray) {
+    fun getResult(context: Context, array: IntArray): Bitmap {
         val diffusionExecutor = DiffusionExecutor(context)
-        diffusionExecutor.encoderExecutor(array)
+        val bitmap = diffusionExecutor.encoderExecutor(array)
+        return bitmap
     }
 }

@@ -1,6 +1,8 @@
 package com.example.diffusionmodelsapp.ui.main
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.SystemClock
 import android.util.Log
 import com.chaquo.python.Python
@@ -198,7 +200,7 @@ class DiffusionExecutor(
     }
 
     // Function for Interpreter
-    fun encoderExecutor(intArray: IntArray) {
+    fun encoderExecutor(intArray: IntArray): Bitmap {
         try {
             Log.i(TAG, "running models")
 
@@ -402,14 +404,38 @@ class DiffusionExecutor(
             Log.i(TAG, "Context: ${arrayOutputsContext[0][76][767]}")
             Log.i(TAG, "Unconditional context: ${arrayOutputsUnconditionalContext[0][76][767]}")
 
-
+            return convertArrayToBitmap(decoderResult, 512, 512)
         } catch (e: Exception) {
 
             val exceptionLog = "something went wrong: ${e.message}"
             Log.e(TAG, exceptionLog)
-
+            return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
         }
 
+    }
+
+
+    fun convertArrayToBitmap(
+        imageArray: Array<Array<Array<IntArray>>>,
+        imageWidth: Int,
+        imageHeight: Int
+    ): Bitmap {
+        val conf = Bitmap.Config.ARGB_8888 // see other conf types
+        val bitmapImage = Bitmap.createBitmap(imageWidth, imageHeight, conf)
+
+        for (x in imageArray[0].indices) {
+            for (y in imageArray[0][0].indices) {
+                val color = Color.rgb(
+                    ((imageArray[0][x][y][0])),
+                    ((imageArray[0][x][y][1])),
+                    (imageArray[0][x][y][2])
+                )
+
+                // this y, x is in the correct order!!!
+                bitmapImage.setPixel(y, x, color)
+            }
+        }
+        return bitmapImage
     }
 
     /*fun byteArrayOfInts(vararg ints: Int) = ByteArray(ints.size) { pos -> ints[pos].toByte() }
