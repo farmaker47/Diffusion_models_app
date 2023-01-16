@@ -76,3 +76,15 @@ def runDecoderModel(latent):
   print(np.array(json_response['outputs']).shape)
 
   return np.array(json_response['outputs'])
+
+def getArrayFromFile():
+  filename = join(dirname(__file__), "diffusion_print.txt")
+  datafromfile = np.loadtxt(filename, delimiter="\n", dtype="str")
+  print(datafromfile)
+  #filename = "/data/data/com.example.diffusionmodelsapp/files/diffusion_model_17.tflite"
+  #print(filename)
+  # Load the TFLite model and allocate tensors.
+  #interpreter = tf.lite.Interpreter(model_path=filename)
+  #interpreter.allocate_tensors()
+
+  return 0

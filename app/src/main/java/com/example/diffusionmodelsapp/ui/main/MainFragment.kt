@@ -55,9 +55,17 @@ class MainFragment : Fragment() {
             progress.visibility = View.VISIBLE
             lifecycleScope.launch(Dispatchers.IO) {
                 // Get string from Python
+                /*val python = Python.getInstance()
+                val pythonFile = python.getModule("encode_text")*/
+
                 val python = Python.getInstance()
-                val pythonFile = python.getModule("encode_text")
-                val encodedObject: IntArray =
+                val modelfile = python.getModule("run_diffusion_model")
+
+                val diffusionResult = modelfile.callAttr(
+                    "getArrayFromFile",
+
+                    )
+                /*val encodedObject: IntArray =
                     pythonFile.callAttr("encodeText", editText.text.toString())
                         .toJava(IntArray::class.java)
 
@@ -68,7 +76,7 @@ class MainFragment : Fragment() {
                 withContext(Dispatchers.Main) {
                     imageView.setImageBitmap(bitmap)
                     progress.visibility = View.GONE
-                }
+                }*/
             }
 
         }
