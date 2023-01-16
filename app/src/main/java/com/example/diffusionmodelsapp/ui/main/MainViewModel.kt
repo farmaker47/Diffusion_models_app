@@ -8,7 +8,6 @@ class MainViewModel : ViewModel() {
 
     fun getResult(context: Context, array: IntArray): Bitmap {
         val diffusionExecutor = DiffusionExecutor(context)
-        val bitmap = diffusionExecutor.encoderExecutor(array)
-        return bitmap
+        return diffusionExecutor.encoderExecutor(array)
     }
 }

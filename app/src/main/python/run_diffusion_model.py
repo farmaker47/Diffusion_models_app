@@ -3,6 +3,10 @@ from os.path import dirname, join
 import numpy as np
 import requests
 
+# Below implementation is in python because there were a lot of memory issues inside android
+
+# Run the diffusion model.
+# Change the ADDRESS parameter based on yours.
 def runDiffusionModel(context, unconditional_context):
   #filename = join(dirname(__file__), "method.tflite")
   #filename = "/data/data/com.example.diffusionmodelsapp/files/diffusion_model_17.tflite"
@@ -42,6 +46,8 @@ def runDiffusionModel(context, unconditional_context):
 
   return json_response['outputs'] #np.array(json_response['outputs'])
 
+# Run the decoder model.
+# Change the ADDRESS parameter based on yours.
 def runDecoderModel(latent):
   latent = np.array(latent)
 

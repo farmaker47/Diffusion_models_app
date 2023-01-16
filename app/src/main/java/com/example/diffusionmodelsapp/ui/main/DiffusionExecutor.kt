@@ -23,13 +23,13 @@ class DiffusionExecutor(
     private val interpreterEncoder: Interpreter
 
     //private val interpreterDiffusion: Interpreter
-    private val interpreterDecoder: Interpreter
+    //private val interpreterDecoder: Interpreter
 
     init {
         // Interpreter
         interpreterEncoder = getInterpreter(context, ENCODER_MODEL, false)
         //interpreterDiffusion = getInterpreter(context, DIFFUSION_MODEL, false)
-        interpreterDecoder = getInterpreter(context, DECODER_MODEL, false)
+        //interpreterDecoder = getInterpreter(context, DECODER_MODEL, false)
     }
 
     companion object {
@@ -38,7 +38,7 @@ class DiffusionExecutor(
         private const val ENCODER_MODEL = "text_encoder_chollet_float_16.tflite"
 
         //private const val DIFFUSION_MODEL = "diffusion_model_17.tflite"
-        private const val DECODER_MODEL = "decoder2.tflite"
+        //private const val DECODER_MODEL = "decoder2.tflite"
         private val intArrayOfPositions = intArrayOf(
             0,
             1,
@@ -207,18 +207,18 @@ class DiffusionExecutor(
             fullExecutionTime = SystemClock.uptimeMillis()
 
             // Info of the model
-            val inputType = interpreterDecoder.getInputTensor(0).dataType()
+            /*val inputType = interpreterDecoder.getInputTensor(0).dataType()
             val inputName = interpreterDecoder.getInputTensor(0).name()
             val inputShape = interpreterDecoder.getInputTensor(0).shape()
-            Log.i(TAG, "$inputType $inputName $inputShape")
+            Log.i(TAG, "$inputType $inputName $inputShape")*/
 
-            val decoderOutput = Array(1) {
+            /*val decoderOutput = Array(1) {
                 Array(1) {
                     Array(1) {
                         IntArray(3)
                     }
                 }
-            }
+            }*/
             /*val inputType1 = interpreterEncoder.getInputTensor(1).dataType()
             val inputName1 = interpreterEncoder.getInputTensor(1).name()
             val inputShape1 = interpreterEncoder.getInputTensor(1).shape()
@@ -369,6 +369,7 @@ class DiffusionExecutor(
             //
             val python = Python.getInstance()
             val modelfile = python.getModule("run_diffusion_model")
+
             val diffusionResult = modelfile.callAttr(
                 "runDiffusionModel",
                 arrayOutputsContext,
@@ -412,7 +413,7 @@ class DiffusionExecutor(
     }
 
 
-    fun convertArrayToBitmap(
+    private fun convertArrayToBitmap(
         imageArray: Array<Array<Array<IntArray>>>,
         imageWidth: Int,
         imageHeight: Int
@@ -434,25 +435,6 @@ class DiffusionExecutor(
         }
         return bitmapImage
     }
-
-    /*fun byteArrayOfInts(vararg ints: Int) = ByteArray(ints.size) { pos -> ints[pos].toByte() }
-
-    fun toByteArray(value: Int): ByteArray {
-        val result = ByteArray(4)
-        return Conversion.intToByteArray(value, 0, result, 0, 4)
-    }*/
-
-    /*fun convertToByteArray(pIntArray: IntArray): ByteArray {
-        val array = ByteArray(pIntArray.size * 4)
-        for (j in pIntArray.indices) {
-            val c = pIntArray[j]
-            array[j * 4] = (c and -0x1000000 shr 24).toByte()
-            array[j * 4 + 1] = (c and 0xFF0000 shr 16).toByte()
-            array[j * 4 + 2] = (c and 0xFF00 shr 8).toByte()
-            array[j * 4 + 3] = (c and 0xFF).toByte()
-        }
-        return array
-    }*/
 
     @Throws(IOException::class)
     private fun getInterpreter(

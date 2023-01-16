@@ -30,7 +30,6 @@ class MainFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
     }
 
     override fun onCreateView(
@@ -58,14 +57,14 @@ class MainFragment : Fragment() {
                 // Get string from Python
                 val python = Python.getInstance()
                 val pythonFile = python.getModule("encode_text")
-                //val encodedString = pythonFile.callAttr("encodeText", "two cats doing research")
-                //Log.v("Chaquopy", encodedString.toString())
                 val encodedObject: IntArray =
                     pythonFile.callAttr("encodeText", editText.text.toString())
                         .toJava(IntArray::class.java)
 
+                // Start procedure.
                 val bitmap = viewModel.getResult(requireActivity(), encodedObject)
                 val imageView = contentView.findViewById<ImageView>(R.id.imageViewBitmap)
+
                 withContext(Dispatchers.Main) {
                     imageView.setImageBitmap(bitmap)
                     progress.visibility = View.GONE

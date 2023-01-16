@@ -75,7 +75,7 @@ dependencies {
     //implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0-rc7'
     //implementation("org.tensorflow:tensorflow-lite:${tfl_version}") { changing = true }
     implementation 'org.tensorflow:tensorflow-lite:2.11.0'
-    implementation 'org.tensorflow:tensorflow-lite-select-tf-ops:2.11.0'
+    //implementation 'org.tensorflow:tensorflow-lite-select-tf-ops:2.11.0'
     //implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly-SNAPSHOT'
     //implementation("org.tensorflow:tensorflow-lite-gpu:${tfl_version}") { changing = true }
     //implementation("org.tensorflow:tensorflow-lite-support:0.2.0-rc2")
