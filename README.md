@@ -1,7 +1,7 @@
 # Diffusion_models_app
 
 
-Showcase of diffusion models
+Showcase of diffusion models. Goes along with the [notebook](https://github.com/farmaker47/diffusion_models_tflite_conversion_and_inference)
 
 Tokenizer with python implementation is used on master branch.
 
