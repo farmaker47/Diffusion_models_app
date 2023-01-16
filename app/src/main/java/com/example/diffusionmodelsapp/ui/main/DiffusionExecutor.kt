@@ -23,13 +23,13 @@ class DiffusionExecutor(
     private val interpreterEncoder: Interpreter
 
     //private val interpreterDiffusion: Interpreter
-    //private val interpreterDecoder: Interpreter
+    private val interpreterDecoder: Interpreter
 
     init {
         // Interpreter
         interpreterEncoder = getInterpreter(context, ENCODER_MODEL, false)
         //interpreterDiffusion = getInterpreter(context, DIFFUSION_MODEL, false)
-        //interpreterDecoder = getInterpreter(context, DECODER_MODEL, false)
+        interpreterDecoder = getInterpreter(context, DECODER_MODEL, false)
     }
 
     companion object {
@@ -38,7 +38,7 @@ class DiffusionExecutor(
         private const val ENCODER_MODEL = "text_encoder_chollet_float_16.tflite"
 
         //private const val DIFFUSION_MODEL = "diffusion_model_17.tflite"
-        //private const val DECODER_MODEL = "decoder2.tflite"
+        private const val DECODER_MODEL = "decoder.tflite"
         private val intArrayOfPositions = intArrayOf(
             0,
             1,
@@ -212,13 +212,13 @@ class DiffusionExecutor(
             val inputShape = interpreterDecoder.getInputTensor(0).shape()
             Log.i(TAG, "$inputType $inputName $inputShape")*/
 
-            /*val decoderOutput = Array(1) {
+            val decoderOutput = Array(1) {
                 Array(1) {
                     Array(1) {
                         IntArray(3)
                     }
                 }
-            }*/
+            }
             /*val inputType1 = interpreterEncoder.getInputTensor(1).dataType()
             val inputName1 = interpreterEncoder.getInputTensor(1).name()
             val inputShape1 = interpreterEncoder.getInputTensor(1).shape()
@@ -374,7 +374,7 @@ class DiffusionExecutor(
                 "runDiffusionModel",
                 arrayOutputsContext,
                 arrayOutputsUnconditionalContext
-            )//.toJava(Array<Array<Array<FloatArray>>>::class.java)
+            ).toJava(Array<Array<Array<FloatArray>>>::class.java)
 
             Log.v("ChaquopyDiffusion", "diffusionResult.toString()")
             /*diffusionResult[0][0][0].forEach { first ->
@@ -382,27 +382,29 @@ class DiffusionExecutor(
             }*/
 
             // Decoder
-            val decoderResult = modelfile.callAttr(
+            /*val decoderResult = modelfile.callAttr(
                 "runDecoderModel",
                 diffusionResult
-            ).toJava(Array<Array<Array<IntArray>>>::class.java)
+            ).toJava(Array<Array<Array<IntArray>>>::class.java)*/
 
-            Log.v("Chaquopyy", "decoderResult.toString()")
+            Log.v("Chaquopyy", "startDecoder.toString()")
 
             // Interpreter
             /*decoderResult[0][0][0].forEach { first ->
                 Log.v("ChaquopyD", first.toString())
             }*/
+            //interpreterEncoder.close()
+            interpreterEncoder.close()
 
-            /*interpreterDecoder.run(
+            interpreterDecoder.run(
                 diffusionResult, decoderOutput
-            )*/
+            )
 
             Log.i(TAG, "Time to run everything: $fullExecutionTime")
             Log.i(TAG, "Context: ${arrayOutputsContext[0][76][767]}")
             Log.i(TAG, "Unconditional context: ${arrayOutputsUnconditionalContext[0][76][767]}")
 
-            return convertArrayToBitmap(decoderResult, 512, 512)
+            return convertArrayToBitmap(decoderOutput, 512, 512)
         } catch (e: Exception) {
 
             val exceptionLog = "something went wrong: ${e.message}"
