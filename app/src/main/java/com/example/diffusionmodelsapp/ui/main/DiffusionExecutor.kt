@@ -36,7 +36,7 @@ class DiffusionExecutor(
         private const val ENCODER_MODEL = "text_encoder_chollet_float_16.tflite"
 
         //private const val DIFFUSION_MODEL = "diffusion_model_17.tflite"
-        private const val DECODER_MODEL = "decoder.tflite"
+        private const val DECODER_MODEL = "decoder2.tflite"
         private val intArrayOfPositions = intArrayOf(
             0,
             1,
@@ -209,6 +209,14 @@ class DiffusionExecutor(
             val inputName = interpreterDecoder.getInputTensor(0).name()
             val inputShape = interpreterDecoder.getInputTensor(0).shape()
             Log.i(TAG, "$inputType $inputName $inputShape")
+
+            val decoderOutput = Array(1) {
+                Array(1) {
+                    Array(1) {
+                        IntArray(3)
+                    }
+                }
+            }
             /*val inputType1 = interpreterEncoder.getInputTensor(1).dataType()
             val inputName1 = interpreterEncoder.getInputTensor(1).name()
             val inputShape1 = interpreterEncoder.getInputTensor(1).shape()
@@ -356,32 +364,39 @@ class DiffusionExecutor(
 
             fullExecutionTime = SystemClock.uptimeMillis() - fullExecutionTime
 
+            interpreterEncoder.close()
+
 
             //
             val python = Python.getInstance()
             val modelfile = python.getModule("run_diffusion_model")
-            val result = modelfile.callAttr(
-                "runModel",
+            val diffusionResult = modelfile.callAttr(
+                "runDiffusionModel",
                 arrayOutputsContext,
                 arrayOutputsUnconditionalContext
-            ).toJava(Array<Array<Array<FloatArray>>>::class.java)
+            )//.toJava(Array<Array<Array<FloatArray>>>::class.java)
 
-            Log.v("Chaquopyy", result.toString())
-            result[0][0][0].forEach { first ->
+            Log.v("ChaquopyDiffusion", "diffusionResult.toString()")
+            /*diffusionResult[0][0][0].forEach { first ->
                 Log.v("Chaquopy", first.toString())
-            }
+            }*/
 
             // Decoder
-            val decoderOutput = Array(1) {
-                Array(1) {
-                    Array(1) {
-                        IntArray(3)
-                    }
-                }
-            }
-            interpreterDecoder.run(
-                result, decoderOutput
-            )
+            val decoderResult = modelfile.callAttr(
+                "runDecoderModel",
+                diffusionResult
+            ).toJava(Array<Array<Array<IntArray>>>::class.java)
+
+            Log.v("Chaquopyy", "decoderResult.toString()")
+
+            // Interpreter
+            /*decoderResult[0][0][0].forEach { first ->
+                Log.v("ChaquopyD", first.toString())
+            }*/
+
+            /*interpreterDecoder.run(
+                diffusionResult, decoderOutput
+            )*/
 
             Log.i(TAG, "Time to run everything: $fullExecutionTime")
             Log.i(TAG, "Context: ${arrayOutputsContext[0][76][767]}")
