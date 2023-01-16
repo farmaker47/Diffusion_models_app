@@ -366,9 +366,6 @@ class DiffusionExecutor(
 
             fullExecutionTime = SystemClock.uptimeMillis() - fullExecutionTime
 
-            interpreterEncoder.close()
-
-
             //
             val python = Python.getInstance()
             val modelfile = python.getModule("run_diffusion_model")
