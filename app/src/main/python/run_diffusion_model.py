@@ -15,36 +15,34 @@ def runDiffusionModel(context, unconditional_context):
   #interpreter = tf.lite.Interpreter(model_path=filename)
   #interpreter.allocate_tensors()
 
-  context = np.array(context)
-  unconditional_context = np.array(unconditional_context)
-  print(type(context.tolist()))
+  #context = np.array(context)
+  #unconditional_context = np.array(unconditional_context)
+  #print(type(context.tolist()))
 
-  data = json.dumps(
-      {
-          "signature_name": "serving_default",
-          "inputs": {
-              "batch_size": 1,
-              "context": context.tolist(),
-              "num_steps": 25,
-              "unconditional_context": unconditional_context.tolist()
-          }
-  })
-
-  headers = {
-      "content-type": "application/json"
+  input_data_for_model = {
+      'context' : np.array(context).tolist(),
+      'unconditional_context' : np.array(unconditional_context).tolist()
   }
+  '''
+  print(type(np.array(context).tolist()))
+  input_data_for_model = {
+        'context' : 3,
+        'unconditional_context' : 4
+    }
+  '''
+  data = json.dumps(input_data_for_model)
 
-  ADDRESS = "104.197.115.145"
-  response = requests.post(
-      f"http://{ADDRESS}:8501/v1/models/diffusion-model:predict", data=data, headers=headers
-  )
+  ADDRESS = "http://bd4e-34-85-232-110.ngrok.io/diffusion_model_in"
+  response = requests.post(ADDRESS, data=data)
   json_response = json.loads(response.text)
+  json_response = json.loads(json_response)
 
+  print(json_response['output'])
 
-  print(type(json_response['outputs']))
-  print(np.array(json_response['outputs']).shape)
+  print(type(json_response['output']))
+  print(np.array(json_response['output']).shape)
 
-  return json_response['outputs'] #np.array(json_response['outputs'])
+  return json_response['output'] #np.array(json_response['outputs'])
 
 # Run the decoder model.
 # Change the ADDRESS parameter based on yours.

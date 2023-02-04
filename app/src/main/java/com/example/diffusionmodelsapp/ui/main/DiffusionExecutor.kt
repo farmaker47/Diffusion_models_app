@@ -376,18 +376,18 @@ class DiffusionExecutor(
                 arrayOutputsUnconditionalContext
             )//.toJava(Array<Array<Array<FloatArray>>>::class.java)
 
-            Log.v("ChaquopyDiffusion", "diffusionResult.toString()")
+            Log.v(TAG, "diffusionResult.toString()")
             /*diffusionResult[0][0][0].forEach { first ->
                 Log.v("Chaquopy", first.toString())
             }*/
 
             // Decoder
-            val decoderResult = modelfile.callAttr(
+            /*val decoderResult = modelfile.callAttr(
                 "runDecoderModel",
                 diffusionResult
-            ).toJava(Array<Array<Array<IntArray>>>::class.java)
+            ).toJava(Array<Array<Array<IntArray>>>::class.java)*/
 
-            Log.v("Chaquopyy", "decoderResult.toString()")
+            Log.v(TAG, "decoderResult.toString()")
 
             // Interpreter
             /*decoderResult[0][0][0].forEach { first ->
@@ -402,7 +402,7 @@ class DiffusionExecutor(
             Log.i(TAG, "Context: ${arrayOutputsContext[0][76][767]}")
             Log.i(TAG, "Unconditional context: ${arrayOutputsUnconditionalContext[0][76][767]}")
 
-            return convertArrayToBitmap(decoderResult, 512, 512)
+            return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)//convertArrayToBitmap(decoderResult, 512, 512)
         } catch (e: Exception) {
 
             val exceptionLog = "something went wrong: ${e.message}"
