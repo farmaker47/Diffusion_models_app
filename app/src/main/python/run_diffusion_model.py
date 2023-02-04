@@ -32,13 +32,12 @@ def runDiffusionModel(context, unconditional_context):
   '''
   data = json.dumps(input_data_for_model)
 
-  ADDRESS = "http://bd4e-34-85-232-110.ngrok.io/diffusion_model_in"
+  ADDRESS = "http://182b-35-237-48-189.ngrok.io/diffusion_model_inferenc"
   response = requests.post(ADDRESS, data=data)
   json_response = json.loads(response.text)
   json_response = json.loads(json_response)
 
-  print(json_response['output'])
-
+  #print(json_response['output'])
   print(type(json_response['output']))
   print(np.array(json_response['output']).shape)
 

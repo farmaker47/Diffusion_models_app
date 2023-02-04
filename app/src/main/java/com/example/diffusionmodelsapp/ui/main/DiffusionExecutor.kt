@@ -374,7 +374,7 @@ class DiffusionExecutor(
                 "runDiffusionModel",
                 arrayOutputsContext,
                 arrayOutputsUnconditionalContext
-            )//.toJava(Array<Array<Array<FloatArray>>>::class.java)
+            ).toJava(Array<Array<Array<IntArray>>>::class.java)//.toJava(Array<Array<Array<FloatArray>>>::class.java)
 
             Log.v(TAG, "diffusionResult.toString()")
             /*diffusionResult[0][0][0].forEach { first ->
@@ -402,7 +402,7 @@ class DiffusionExecutor(
             Log.i(TAG, "Context: ${arrayOutputsContext[0][76][767]}")
             Log.i(TAG, "Unconditional context: ${arrayOutputsUnconditionalContext[0][76][767]}")
 
-            return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)//convertArrayToBitmap(decoderResult, 512, 512)
+            return convertArrayToBitmap(diffusionResult, 512, 512)
         } catch (e: Exception) {
 
             val exceptionLog = "something went wrong: ${e.message}"
