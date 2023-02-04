@@ -6,6 +6,7 @@ Showcase of diffusion models. Goes along with the [notebook](https://github.com/
 Tokenizer with python implementation is used on master branch.
 
 Diffusion and Decoder model are running online due to map errors.
+New branch created.
 
 Check `loadModelFromInternalStorage` method at DiffusionExecutor to see where to upload the .tflite file of the Encoder.
 
