@@ -14,7 +14,7 @@ def runDiffusionModel(context, unconditional_context):
   }
   data = json.dumps(input_data_for_model)
 
-  ADDRESS = "http://6cc0-34-82-213-91.ngrok.io/diffusion_model_inference"
+  ADDRESS = "http://2545-34-82-213-91.ngrok.io/diffusion_model_inferenc"
   response = requests.post(ADDRESS, data=data)
   json_response = json.loads(response.text)
   json_response = json.loads(json_response)

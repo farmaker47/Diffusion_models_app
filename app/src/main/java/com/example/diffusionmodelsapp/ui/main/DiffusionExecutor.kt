@@ -18,18 +18,18 @@ class DiffusionExecutor(
     private var useGPU: Boolean = false
 ) {
 
-    private var numberThreads = 7
+    private var numberThreads = 6
     private var fullExecutionTime = 0L
     private val interpreterEncoder: Interpreter
 
     //private val interpreterDiffusion: Interpreter
-    //private val interpreterDecoder: Interpreter
+    private val interpreterDecoder: Interpreter
 
     init {
         // Interpreter
         interpreterEncoder = getInterpreter(context, ENCODER_MODEL, false)
         //interpreterDiffusion = getInterpreter(context, DIFFUSION_MODEL, false)
-        //interpreterDecoder = getInterpreter(context, DECODER_MODEL, false)
+        interpreterDecoder = getInterpreter(context, DECODER_MODEL, false)
     }
 
     companion object {
@@ -38,7 +38,7 @@ class DiffusionExecutor(
         private const val ENCODER_MODEL = "text_encoder_chollet_float_16.tflite"
 
         //private const val DIFFUSION_MODEL = "diffusion_model_17.tflite"
-        //private const val DECODER_MODEL = "decoder2.tflite"
+        private const val DECODER_MODEL = "image_decoder.tflite"
         private val intArrayOfPositions = intArrayOf(
             0,
             1,
@@ -366,6 +366,8 @@ class DiffusionExecutor(
 
             fullExecutionTime = SystemClock.uptimeMillis() - fullExecutionTime
 
+            interpreterEncoder.close()
+
             //
             val python = Python.getInstance()
             val modelfile = python.getModule("run_diffusion_model")
@@ -374,7 +376,7 @@ class DiffusionExecutor(
                 "runDiffusionModel",
                 arrayOutputsContext,
                 arrayOutputsUnconditionalContext
-            ).toJava(Array<Array<Array<IntArray>>>::class.java)//.toJava(Array<Array<Array<FloatArray>>>::class.java)
+            ).toJava(Array<Array<Array<FloatArray>>>::class.java)//.toJava(Array<Array<Array<FloatArray>>>::class.java)
 
             Log.v(TAG, "diffusionResult.toString()")
             /*diffusionResult[0][0][0].forEach { first ->
@@ -387,22 +389,30 @@ class DiffusionExecutor(
                 diffusionResult
             ).toJava(Array<Array<Array<IntArray>>>::class.java)*/
 
-            Log.v(TAG, "decoderResult.toString()")
+            //Log.v(TAG, "decoderResult.toString()")
 
             // Interpreter
             /*decoderResult[0][0][0].forEach { first ->
                 Log.v("ChaquopyD", first.toString())
             }*/
 
-            /*interpreterDecoder.run(
+            val decoderOutput = Array(1) {
+                Array(512) {
+                    Array(512) {
+                        FloatArray(3)
+                    }
+                }
+            }
+
+            interpreterDecoder.run(
                 diffusionResult, decoderOutput
-            )*/
+            )
 
             Log.i(TAG, "Time to run everything: $fullExecutionTime")
-            Log.i(TAG, "Context: ${arrayOutputsContext[0][76][767]}")
-            Log.i(TAG, "Unconditional context: ${arrayOutputsUnconditionalContext[0][76][767]}")
+            //Log.i(TAG, "Context: ${arrayOutputsContext[0][76][767]}")
+            //Log.i(TAG, "Unconditional context: ${arrayOutputsUnconditionalContext[0][76][767]}")
 
-            return convertArrayToBitmap(diffusionResult, 512, 512)
+            return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)//convertArrayToBitmap(diffusionResult, 512, 512)
         } catch (e: Exception) {
 
             val exceptionLog = "something went wrong: ${e.message}"
@@ -450,7 +460,7 @@ class DiffusionExecutor(
         //tfliteOptions.setUseXNNPACK(true) //     Caused by: java.lang.IllegalArgumentException: Internal error: Failed to apply XNNPACK delegate:
         //     Attempting to use a delegate that only supports static-sized tensors with a graph that has dynamic-sized tensors.
         val mByteBuffer = loadModelFromInternalStorage(context, modelName)
-        return Interpreter(mByteBuffer)//Interpreter(loadModelFile(context, modelName), tfliteOptions)
+        return Interpreter(mByteBuffer, tfliteOptions)//Interpreter(loadModelFile(context, modelName), tfliteOptions)
     }
 
     @Throws(IOException::class)
