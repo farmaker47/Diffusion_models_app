@@ -1,7 +1,7 @@
 # Diffusion_models_app
 
 
-Showcase of diffusion models. Goes along with the [notebook](https://github.com/farmaker47/diffusion_models_tflite_conversion_and_inference)
+Showcase of diffusion models. Goes along with the [notebook](https://github.com/farmaker47/Diffusion_models_app/blob/colab_with_ngrok_api/GPU_Ngrok_Diffusion_deployment.ipynb)
 
 Tokenizer with python implementation is used.
 
