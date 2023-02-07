@@ -1,7 +1,7 @@
 # Diffusion_models_app
 
 
-Showcase of diffusion models. Goes along with the [notebook](https://github.com/farmaker47/Diffusion_models_app/blob/colab_with_ngrok_api/GPU_Ngrok_Diffusion_deployment.ipynb)
+Showcase of diffusion models. Goes along with the [notebook](https://github.com/farmaker47/Diffusion_models_app/blob/colab_with_ngrok_api/GPU_Ngrok_Diffusion_deployment.ipynb). Run the notebook from top to bottom with a free session of Colab and get use of the GPU. In the end ngrok will give you an address which you can place it at [this](https://github.com/farmaker47/Diffusion_models_app/blob/colab_with_ngrok_api/app/src/main/python/run_diffusion_model.py#L17) line of code.
 
 Tokenizer with python implementation is used.
 
