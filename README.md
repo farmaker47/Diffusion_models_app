@@ -3,6 +3,8 @@
 
 Showcase of diffusion models. Goes along with the [notebook](https://github.com/farmaker47/diffusion_models_tflite_conversion_and_inference)
 
+Medium post [here](https://medium.com/p/33b3f32ca5fb)
+
 Tokenizer with python implementation is used on master branch.
 
 Diffusion and Decoder model are running online due to map errors.
